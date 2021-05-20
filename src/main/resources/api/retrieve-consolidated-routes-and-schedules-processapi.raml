@@ -1,0 +1,81 @@
+#%RAML 1.0
+title: Retrieve Consolidated Routes and Schedules ProcessAPI
+description: To consolidate routes and schedules
+
+types:
+  CommonError: !include /libraries/common/datatype/Common error dataType.raml
+  GetRoutes: !include /libraries/Routes/DataType/Route 200 response dataType.raml
+  GetSchedule: !include /libraries/Schedule/DataType/Schedule 200response dataType.raml
+
+uses:
+  Common: /libraries/common/common library.raml
+  Get Routes: /libraries/Routes/Routes library.raml
+  Get Schedules: /libraries/Schedule/Schedules library.raml
+
+/booking:
+  /{transportType}:
+    /routes:
+      get:
+        is:
+          - Common.transcationalId
+          - Common.company Name
+          - Common.depature Location
+          - Common.destination location
+        responses:
+          200:
+            body:
+              application/json:
+                type: Get Routes.Get Routes
+                example: !include /libraries/Routes/Example/route200response.json
+                 
+          400:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/common/example/errorhander400.json
+          404:
+              body:
+                application/json:
+                  type: CommonError   
+                  example: !include /libraries/common/example/errorhander404.json 
+          500:
+             body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/common/example/commonError500.json
+    /schedules:
+      get:
+        is:
+          - Common.transcationalId
+          - Common.company Name
+          - Common.depature Location
+          - Common.destination location
+          - Common.TimeZone
+ 
+        responses:
+          200:
+            body:
+              application/json:
+                type: Get Schedules.Get Schedules
+                example: !include /libraries/Schedule/example/Schedule 200 response.json
+                  
+          400:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/common/example/errorhander400.json
+                      
+          404:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/common/example/errorhander404.json
+          500:
+            body:
+              application/json:
+                type: CommonError
+                example: !include /libraries/common/example/commonError500.json
+                     
+
+                 
+                                 
