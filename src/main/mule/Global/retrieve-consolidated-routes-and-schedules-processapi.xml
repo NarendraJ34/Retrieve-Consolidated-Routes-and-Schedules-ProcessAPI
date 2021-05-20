@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+       <flow name="retrieve-consolidated-routes-and-schedules-processapi-main">
+    <http:listener config-ref="retrieve-consolidated-routes-and-schedules-processapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="retrieve-consolidated-routes-and-schedules-processapi-config" />
+        <error-handler ref="Global_ErrorHandlerError_Handler">
+           
+        </error-handler>
+    </flow>
+    <flow name="retrieve-consolidated-routes-and-schedules-processapi-console">
+        <http:listener config-ref="retrieve-consolidated-routes-and-schedules-processapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="retrieve-consolidated-routes-and-schedules-processapi-config" />
+		<error-handler ref="Global_ErrorHandlerError_Handler" />
+    </flow>
+    <sub-flow name="retrieve-consolidated-routes-and-schedules-processapiSub_Flow" doc:id="ee73b773-aea6-4296-942a-9b33990710ac" >
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:name="Initalise request for Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="transportCompany"><![CDATA[attributes.queryParams.'companyName']]></ee:set-variable>
+                <ee:set-variable variableName="transportType"><![CDATA[attributes.uriParams.'transportType']]></ee:set-variable>
+				<ee:set-variable variableName="transcationId" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.transcationId]]></ee:set-variable>
+				<ee:set-variable variableName="departureLocation" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryparams.'departureLocation']]></ee:set-variable>
+				<ee:set-variable variableName="destinationLocation" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryparams.destinationLocation]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+	</sub-flow>
+	<flow name="get:\booking\(transportType)\routes:retrieve-consolidated-routes-and-schedules-processapi-config">
+        <flow-ref doc:name="Flow Reference" doc:id="961ad3b2-abb1-4ceb-ad51-8f11ad4ee6b0" name="retrieve-consolidated-routes-and-schedules-processapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bab2f9f2-62d6-4162-8555-7e194cabebc8" message="Request Received for Routes  Process API For transactionId: #[vars.transcationId]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="8d401ee7-8367-4380-ac3d-641664c7176c" name="Routes_ProcessAPIFlow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="cac9d36a-72f3-4e8f-b56a-53d10184bf07" message="Response sent  for Routes  Process API For transactionId: #[vars.transcationId]"/>
+    </flow>
+    <flow name="get:\booking\(transportType)\schedules:retrieve-consolidated-routes-and-schedules-processapi-config">
+        <flow-ref doc:name="Flow Reference" doc:id="679862bb-967a-4d5e-944f-a9232dbec1da" name="retrieve-consolidated-routes-and-schedules-processapiSub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ecc87c59-1a6f-4ba2-a1df-4ca397b24f79" message="Request Received for Schedules  Process API For transactionId: #[vars.transcationId]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="ddd0814d-216f-4b11-b9eb-958d198b021d" name="Schedules_ProcessAPISub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a26ba2f4-d920-47ac-b307-49234fa30879" message="Response sent  for Schedules  Process API For transactionId: #[vars.transcationId]"/>
+    </flow>
+</mule>

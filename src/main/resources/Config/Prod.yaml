@@ -1,0 +1,15 @@
+http:
+  listner:
+     host: "localhost"
+     port: "9086"
+  request:
+    Routes:
+     Routes.host: "localhost"
+     Routes.port: "9081"
+     Routes.Routespath: "/FastGocall/Routes"
+     Routes.Schedulespath: "/FastGocall/Schedules"
+    Schedules:
+     host: "localhost"
+     port: "9081"
+     Routespath: "/FastGocall/Routes"
+     Schedulespath: "/FastGocall/Schedules"

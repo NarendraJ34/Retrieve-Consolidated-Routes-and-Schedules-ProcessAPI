@@ -1,0 +1,15 @@
+http:
+  listner:
+     host: "0.0.0.0"
+     port: "9087"
+  request:
+    TravelOnTip:
+     host: "0.0.0.0"
+     port: "8082"
+     Routespath: "/TravelOnTip/routes"
+     Schedulespath: "/TravelOnTip/Schedules"
+    FastGo:
+     host: "0.0.0.0"
+     port: "9085"
+     Routespath: "/FastGo/routes"
+     Schedulespath: "/FastGo/Schedules"
